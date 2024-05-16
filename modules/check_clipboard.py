@@ -1,27 +1,25 @@
 import pyperclip
 from modules.clipboard_content_manager import ClipboardContentManager
 import sys
+import os
 from modules.upload_file import upload_file
-def check_clipboard(windowTitle):
-    WHITELIST_TITLES = ["Discord"]
-    clipboard_manager = ClipboardContentManager()
-    if sys.platform == "win32":
-        windowTitle = windowTitle.split("-")[-1].strip()
-    elif sys.platform == "darwin":
-        windowTitle = windowTitle.split("-")[0].strip()
+def check_clipboard(window_title):
+    whitelist_titles = ["Discord"]
+    platform = sys.platform
+    title_key = -1 if platform == "win32" else 0
+    window_title = window_title.split("-")[title_key].strip()
 
     original_clipboard_contents = pyperclip.paste()
-    
-    if ClipboardContentManager.formed != True:
-        clipboard_manager.save_content_to_file(original_clipboard_contents)
-        ClipboardContentManager.formed = True
 
-    if windowTitle in WHITELIST_TITLES:
-        file_path = clipboard_manager.file_path
+    if not os.path.exists(ClipboardContentManager.file_path):
+        ClipboardContentManager.save_content_to_file(original_clipboard_contents)
+
+    if window_title in whitelist_titles:
+        file_path = ClipboardContentManager.file_path
         url = upload_file(file_path)
         pyperclip.copy(url)
     else:
-        restored_content = clipboard_manager.get_content_from_file()
+        restored_content = ClipboardContentManager.get_content_from_file()
         pyperclip.copy(restored_content)
-        clipboard_manager.clear_file()
+        ClipboardContentManager.clear_file()
         
