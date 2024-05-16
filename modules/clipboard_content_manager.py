@@ -18,3 +18,6 @@ class ClipboardContentManager:
     def clear_file(cls):
         if os.path.exists(cls.file_path):
             os.remove(cls.file_path)
+    @classmethod
+    def exists_clipboard_contents(cls):
+        return os.path.exists(cls.file_path)

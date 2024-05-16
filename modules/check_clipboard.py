@@ -11,7 +11,7 @@ def check_clipboard(window_title):
 
     original_clipboard_contents = pyperclip.paste()
 
-    if not os.path.exists(ClipboardContentManager.file_path):
+    if not ClipboardContentManager.exists_clipboard_contents():
         ClipboardContentManager.save_content_to_file(original_clipboard_contents)
 
     if window_title in whitelist_titles:
