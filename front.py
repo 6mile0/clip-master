@@ -88,7 +88,7 @@ def upload_file(file_path):
 
 class ClipboardContentManager:
 
-    formed = False
+    formed = False  # インスタンス変数ではなくクラス変数として定義
 
 
 
@@ -100,19 +100,19 @@ class ClipboardContentManager:
 
     def save_content_to_file(self, content):
 
-        if ClipboardContentManager.formed != True:
+        if ClipboardContentManager.formed != True:  # クラス名を使用してアクセス
 
             with open(self.file_path, 'w+') as file:
 
                 file.write(content)
 
-            ClipboardContentManager.formed = True
+            ClipboardContentManager.formed = True  # クラス名を使用してアクセス
 
 
 
     def get_content_from_file(self):
 
-        if os.path.exists(self.file_path) and ClipboardContentManager.formed:
+        if os.path.exists(self.file_path) and ClipboardContentManager.formed:  # クラス名を使用してアクセス
 
             with open(self.file_path, 'r') as file:
 
@@ -128,31 +128,37 @@ class ClipboardContentManager:
 
             os.remove(self.file_path)
 
-            ClipboardContentManager.formed = False
+            ClipboardContentManager.formed = False  # クラス名を使用してアクセス
 
 
 
 def check_clipboard(windowTitle):
     WHITELIST_TITLES = ["Discord"]
     clipboard_manager = ClipboardContentManager()
-    windowTitle = windowTitle.split("-")[-1].strip()
+    if sys.platform == "win32":
+        windowTitle = windowTitle.split("-")[-1].strip()
+    elif sys.platform == "darwin":
+        windowTitle = windowTitle.split("-")[1].strip()
     
-    original_clipboard_contents = pyperclip.paste()
+    # original_clipboard_contents変数をここで初期化します。
+    original_clipboard_contents = pyperclip.paste()  # クリップボードの元の内容を保持
     
     if ClipboardContentManager.formed != True:
-        clipboard_manager.save_content_to_file(original_clipboard_contents)
+        clipboard_manager.save_content_to_file(original_clipboard_contents)  # 一時ファイルに保存
         ClipboardContentManager.formed = True
 
     if windowTitle in WHITELIST_TITLES:
         print(original_clipboard_contents)
+        # 保存された一時ファイルのパスを取得してアップロードする
         file_path = clipboard_manager.file_path
         url = upload_file(file_path)
         pyperclip.copy(url)
     else:
         print(original_clipboard_contents)
+        # 必要なら、一時ファイルから内容を復元して再度クリップボードにコピーする
         restored_content = clipboard_manager.get_content_from_file()
         pyperclip.copy(restored_content)
-        clipboard_manager.clear_file()
+        clipboard_manager.clear_file() #のコメントアウトが解除されていないため、不要な行は削除または正しいメソッド名に修正してください。
 
 
 
