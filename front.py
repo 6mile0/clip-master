@@ -138,7 +138,7 @@ def check_clipboard(windowTitle):
     if sys.platform == "win32":
         windowTitle = windowTitle.split("-")[-1].strip()
     elif sys.platform == "darwin":
-        windowTitle = windowTitle.split("-")[1].strip()
+        windowTitle = windowTitle.split("-")[0].strip()
     
     # original_clipboard_contents変数をここで初期化します。
     original_clipboard_contents = pyperclip.paste()  # クリップボードの元の内容を保持
